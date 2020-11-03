@@ -1,0 +1,7 @@
+.game-board {
+  width: 306px;
+  margin: auto;
+
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+}
