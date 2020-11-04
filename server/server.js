@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-// const axios = require('axios');
+const { uuidv4 } = require('uuid');
 
 const port = process.env.PORT || 4001;
 const routes = require('./routes/index');
@@ -15,30 +15,26 @@ const io = socketIo(server);
 let interval;
 
 io.on('connection', (socket) => {
-  console.log('New client connected');
+  console.log(`New client connected: ${socket.id}`);
 
-  if (interval) {
-    clearInterval(interval);
-  }
-  interval = setInterval(() => {
-    getApiAndEmit(socket);
-  }, 1000);
-
+  // Custom Events
   socket.on('test', (data) => {
-    console.log(data)
-  })
+    console.log(data);
+  });
 
-  socket.on('chat message', msg => console.log(`message:${msg}`) )
+  socket.on('createRoom', (roomName, cb) => {
+    const room = {
+      id: uuidv4(),
+    };
+
+    console.log(room);
+    
+  });
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
+    console.log(`Client disconnected: ${socket.id}`);
   });
 });
-
-const getApiAndEmit = (socket) => {
-  const response = new Date();
-  socket.emit('FromAPI', response);
-};
 
 server.listen(port, () => {
   console.log(`Listening on port ${port}`);
