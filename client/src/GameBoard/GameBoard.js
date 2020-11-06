@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import './GameBoard.css';
 import Cell from './Cell/Cell';
@@ -15,92 +15,76 @@ const WINNING_STATES = [
   [2, 4, 6],
 ];
 
-class GameBoard extends Component {
-  state = {
-    gameState: new Array(9).fill(''),
-    isGameActive: true,
-    currentPlayer: 'X',
-  };
+const GameBoard = () => {
+  const [gameState, setGameState] = React.useState(new Array(9).fill(''));
+  const [isGameActive, setIsGameActive] = React.useState(true);
+  const [currentPlayer, setCurrentPlayer] = React.useState('X');
 
-  cellClickedHandler = (cellIndex) => {
-    const { isGameActive, gameState } = this.state;
-
+  const cellClickedHandler = (cellIndex) => {
     if (!isGameActive || gameState[cellIndex] !== '') {
       return;
     }
 
-    console.log(cellIndex);
-    this.playCell(cellIndex, this.state.currentPlayer);
-    this.validateResult();
+    playCell(cellIndex, currentPlayer);
   };
 
-  playCell = (cellIndex, player) => {
-    const updatedGameState = this.state.gameState.slice();
+  const playCell = (cellIndex, player) => {
+    const updatedGameState = gameState.slice();
     updatedGameState[cellIndex] = player;
 
-    this.setState({ gameState: updatedGameState });
+    setGameState(updatedGameState);
+    validateResult(updatedGameState);
   };
 
-  validateResult = () => {
-    this.setState((prevState) => {
-      const { gameState, currentPlayer } = prevState;
+  const validateResult = (updatedGameState) => {
+    const isWinningState = WINNING_STATES.some((winningState) => {
+      const a = updatedGameState[winningState[0]];
+      const b = updatedGameState[winningState[1]];
+      const c = updatedGameState[winningState[2]];
 
-      const isWinningState = WINNING_STATES.some((winningState) => {
-        const a = gameState[winningState[0]];
-        const b = gameState[winningState[1]];
-        const c = gameState[winningState[2]];
-
-        return a !== '' && b !== '' && c !== '' && a === b && b === c;
-      });
-
-      const isDraw = !gameState.includes('');
-
-      if (isWinningState || isDraw) {
-        return {
-          isGameActive: false,
-        };
-      }
-
-      return {
-        isGameActive: true,
-        currentPlayer: currentPlayer === 'X' ? '0' : 'X',
-      };
+      return a !== '' && b !== '' && c !== '' && a === b && b === c;
     });
+
+    const isDraw = !updatedGameState.includes('');
+
+    console.log(isWinningState, isDraw);
+
+    if (isWinningState || isDraw) {
+      setIsGameActive(false);
+      return; // can i return the method directly ?
+    }
+
+    setIsGameActive(true);
+    changePlayer();
   };
 
-  changePlayer = () => {
-    this.setState((prevState) => ({
-      currentPlayer: prevState.currentPlayer === 'X' ? '0' : 'X',
-    }));
+  const changePlayer = () => {
+    setCurrentPlayer(currentPlayer === 'X' ? '0' : 'X');
   };
 
-  restartGameHandler = () => {
-    this.setState({
-      gameState: new Array(9).fill(''),
-      isGameActive: true,
-    });
-    this.changePlayer();
+  const restartGameHandler = () => {
+    setGameState(new Array(9).fill(''));
+    setIsGameActive(true);
+    changePlayer();
   };
 
-  render() {
-    const cells = this.state.gameState.map((value, index) => (
-      <Cell
-        key={index}
-        index={index}
-        value={value}
-        clicked={() => this.cellClickedHandler(index)}
-      />
-    ));
+  const cells = gameState.map((value, index) => (
+    <Cell
+      key={index}
+      index={index}
+      value={value}
+      clicked={() => cellClickedHandler(index)}
+    />
+  ));
 
-    return (
-      <React.Fragment>
-        <div className='game-board'>{cells}</div>
-        <p>{`${this.state.currentPlayer} to play`}</p>
-        <p>{`Game active: ${this.state.isGameActive}`}</p>
-        <button onClick={this.restartGameHandler}>New game</button>
-      </React.Fragment>
-    );
-  }
-}
+  return (
+    <React.Fragment>
+      <div className='game-board'>{cells}</div>
+      <p>{`${currentPlayer} to play`}</p>
+      <p>{`Game active: ${isGameActive}`}</p>
+      <button onClick={restartGameHandler}>New game</button>
+    </React.Fragment>
+  );
+};
 
 export default GameBoard;
