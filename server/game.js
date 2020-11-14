@@ -13,19 +13,19 @@ const WINNING_STATES = [
 ];
 
 let io;
-let socket;
 const games = [];
 
-exports.initGame = function (sio, soc) {
+exports.initGame = function (sio, socket) {
   io = sio;
-  socket = soc;
 
-  socket.on('createGame', createGame);
-  socket.on('joinGame', (gameId) => joinGame(gameId));
-  socket.on('playCell', (cellIndex) => playCell(cellIndex));
+  socket.on('createGame', () => createGame(socket));
+  socket.on('joinGame', (gameId) => joinGame(gameId, socket));
+  socket.on('playCell', (cellIndex) => playCell(cellIndex, socket));
+  socket.on('leaveGame', (gameId) => leaveGame(gameId, socket));
 };
 
-const createGame = () => {
+// EVENT HANDLERS
+const createGame = (socket) => {
   const game = {
     id: uuidv4(),
     sockets: [],
@@ -37,7 +37,7 @@ const createGame = () => {
   socket.emit('gameCreated', game);
 };
 
-const joinGame = (gameId) => {
+const joinGame = (gameId, socket) => {
   const gameIndex = games.findIndex((game) => game.id === gameId);
 
   if (gameIndex < 0) {
@@ -47,18 +47,14 @@ const joinGame = (gameId) => {
   }
 
   if (games[gameIndex].sockets.length >= 2) {
-    // TODO: handle the case where the socket reconnects (socket already exists)
-    // if (games[gameIndex].sockets.contains(socket.id))
     console.info('Game is full.');
     socket.emit('gameNotJoinable');
     return;
   }
 
   socket.join(gameId, () => {
-    socket.gameId = gameId;
     games[gameIndex].sockets.push(socket.id);
     console.log(`${socket.id} joined room ${gameId}.`);
-    socket.emit('gameJoined', games[gameIndex]);
 
     if (games[gameIndex].sockets.length === 2) {
       startGame(games[gameIndex]);
@@ -66,38 +62,20 @@ const joinGame = (gameId) => {
   });
 };
 
-const startGame = (game) => {
-  console.log('start game');
+const playCell = (cellIndex, socket) => {
+  const game = getGameFromSocket(socket);
 
-  const gameInfo = {
-    ...game,
-    gameState: new Array(9).fill(''),
-    isGameActive: true,
-    currentPlayer: {
-      socketId: game.sockets[0],
-      icon: 'X',
-    },
-  };
+  if (!game || game.currentPlayer.socketId !== socket.id) {
+    return;
+  }
 
-  const gameIndex = games.findIndex((game) => game.id === socket.gameId);
-  games[gameIndex] = gameInfo;
-
-  io.to(gameInfo.id).emit('gameInfo', gameInfo);
-};
-
-const playCell = (cellIndex) => {
-  console.log('play cell');
-  const gameIndex = games.findIndex((game) => game.id === socket.gameId);
-  const game = games[gameIndex];
-  console.log(game, gameIndex);
+  // Update the game state
   const updatedGameState = game.gameState.slice();
-
   updatedGameState[cellIndex] = game.currentPlayer.icon;
   game.gameState = updatedGameState;
 
-  const gameOver = isGameOver(updatedGameState);
-
-  if (gameOver) {
+  // End the game or change player
+  if (isGameOver(updatedGameState)) {
     game.isGameActive = false;
   } else {
     game.currentPlayer = {
@@ -109,36 +87,44 @@ const playCell = (cellIndex) => {
     };
   }
 
-  console.log('Cell played. Game info:', game);
-  io.to(socket.gameId).emit('gameInfo', game);
+  io.to(game.id).emit('gameInfo', game);
 };
 
-// WIP
-const leaveRoom = (socket, gameId) => {
-  const gameIndex = games.findIndex((room) => (room.id = gameId));
+const leaveGame = (gameId, socket) => {
+  const gameIndex = games.findIndex((game) => game.id === gameId);
 
   if (gameIndex < 0) {
     console.log('Room not found.');
     return;
   }
 
-  socket.leave();
+  socket.leave(gameId, () => {
+    console.log(`${socket.id} left room ${gameId}.`);
+  });
 };
 
-// WIP
-const ready = () => {
-  console.log(socket.id, 'is ready!');
+// GAME FUNCTIONS
+const startGame = (game) => {
+  console.log(`Start game: ${game.id}`);
 
-  const game = games[socket.gameId];
+  const gameInfo = {
+    ...game,
+    gameState: new Array(9).fill(''),
+    isGameActive: true,
+    currentPlayer: {
+      socketId: game.sockets[0],
+      icon: 'X',
+    },
+  };
 
-  if (game.sockets.length === 2) {
-    for (const client of game.sockets) {
-      client.emit('initGame');
-    }
-  }
+  // Update game info
+  const gameIndex = games.findIndex((g) => g.id === gameInfo.id);
+  games[gameIndex] = gameInfo;
+
+  // Emit the new game info to the room
+  io.to(gameInfo.id).emit('gameInfo', gameInfo);
 };
 
-// Game Functions
 const isGameOver = (gameState) => {
   const isWinningState = WINNING_STATES.some((winningState) => {
     const a = gameState[winningState[0]];
@@ -151,4 +137,13 @@ const isGameOver = (gameState) => {
   const isDraw = !gameState.includes('');
 
   return isWinningState || isDraw;
+};
+
+// UTILS
+const getGameFromSocket = (socket) => {
+  const rooms = Object.keys(socket.rooms);
+  const gameId = rooms[1]; // rooms[0] is the socket's own id
+  const game = games.find((game) => game.id === gameId);
+
+  return game;
 };

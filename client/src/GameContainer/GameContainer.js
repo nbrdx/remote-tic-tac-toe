@@ -11,17 +11,14 @@ const GameContainer = () => {
     history.push('/');
   });
 
-  useSocket('gameJoined', (game) => {
-    console.log('game joined');
-  });
-
-  const { data: gameInfo } = useLastMessage('gameInfo');
+  const { data: gameInfo, socket: socketGameInfo } = useLastMessage('gameInfo');
   const history = useHistory();
   let { gameId } = useParams();
 
   useEffect(() => {
-    console.log('join game');
     socket.emit('joinGame', gameId);
+
+    return () => socket.emit('leaveGame', gameId);
   }, [socket, gameId]);
 
   const playCellHandler = (cellIndex) => {
@@ -32,8 +29,9 @@ const GameContainer = () => {
     <React.Fragment>
       <GameBoard {...gameInfo} cellPlayed={playCellHandler} />
       <button onClick={() => history.push('/')}>Home</button>
-      <p>{gameInfo?.id}</p>
-      <p>{gameInfo?.sockets.join('')}</p>
+      <p>gameId: {gameInfo?.id}</p>
+      <p>socket: {socket.id}</p>
+      <p>players sockets:[{gameInfo?.sockets.join(', ')}]</p>
     </React.Fragment>
   );
 };
