@@ -1,17 +1,13 @@
 import React, { useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-
 import { useLastMessage, useSocket } from 'use-socketio';
 
 import GameBoard from '../GameBoard/GameBoard';
 
 const GameContainer = () => {
-  const { socket } = useSocket('gameNotJoinable', () => {
-    console.log('game not joinable');
-    history.push('/');
-  });
+  const { socket } = useSocket('gameNotJoinable', () => history.push('/'));
+  const { data: gameUpdate } = useLastMessage('gameUpdated');
 
-  const { data: gameInfo, socket: socketGameInfo } = useLastMessage('gameInfo');
   const history = useHistory();
   let { gameId } = useParams();
 
@@ -25,13 +21,36 @@ const GameContainer = () => {
     socket.emit('playCell', cellIndex);
   };
 
+  const replayHandler = () => {
+    socket.emit('replayGame');
+  };
+
+  const playingTurn = gameUpdate ? (
+    gameUpdate.sockets[gameUpdate.currentPlayer] === socket.id ? (
+      <p>Your turn to play !</p>
+    ) : (
+      <p>Waiting for your opponent...</p>
+    )
+  ) : null;
+
+  const gameInfo = gameUpdate ? (
+    <div className='game-info'>
+      <h2>Game Info</h2>
+      <p>gameId: {gameUpdate?.id}</p>
+      <p>socket: {socket.id}</p>
+      <p>players sockets:[{gameUpdate?.sockets.join(', ')}]</p>
+    </div>
+  ) : null;
+
   return (
     <React.Fragment>
-      <GameBoard {...gameInfo} cellPlayed={playCellHandler} />
-      <button onClick={() => history.push('/')}>Home</button>
-      <p>gameId: {gameInfo?.id}</p>
-      <p>socket: {socket.id}</p>
-      <p>players sockets:[{gameInfo?.sockets.join(', ')}]</p>
+      <GameBoard {...gameUpdate} cellPlayed={playCellHandler} />
+      {playingTurn}
+      {gameInfo}
+      <div className='actions'>
+        <button onClick={() => history.push('/')}>Home</button>
+        <button onClick={replayHandler}>Replay</button>
+      </div>
     </React.Fragment>
   );
 };
