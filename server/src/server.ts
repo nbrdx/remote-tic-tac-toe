@@ -1,10 +1,11 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const { initGame } = require('./game');
+import express from 'express';
+import http from 'http';
+import socketIo from 'socket.io';
+
+import routes from './routes/index';
+import { initGame } from './game';
 
 const port = process.env.PORT || 4001;
-const routes = require('./routes/index');
 
 const app = express();
 app.use(routes);
