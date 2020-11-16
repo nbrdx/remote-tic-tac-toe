@@ -1,17 +1,12 @@
-import express from 'express';
 import http from 'http';
-import socketIo from 'socket.io';
+import SocketIO from 'socket.io';
 
-import routes from './routes/index';
 import { initGame } from './game';
 
-const port = process.env.PORT || 4001;
+const PORT = process.env.PORT || 4001;
 
-const app = express();
-app.use(routes);
-
-const server = http.createServer(app);
-const io = socketIo(server);
+const server = http.createServer();
+const io = SocketIO(server);
 
 io.on('connection', (socket) => {
   console.log(`New client connected: ${socket.id}`);
@@ -23,6 +18,6 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+server.listen(PORT, () => {
+  console.log(`Listening on PORT ${PORT}`);
 });
