@@ -1,9 +1,3 @@
-export enum EmitEvent {
-  GameCreated = 'gameCreated',
-  GameUpdated = 'gameUpdated',
-  GameNotJoinable = 'gameNotJoinable',
-}
-
 export const WINNING_STATES: number[][] = [
   [0, 1, 2],
   [3, 4, 5],

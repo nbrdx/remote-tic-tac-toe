@@ -1,5 +1,5 @@
-import { Game, GameIcon } from 'game';
-import { WINNING_STATES } from './game.consts';
+import { Game, GameIcon } from './game.models';
+import { WINNING_STATES } from './game.const';
 
 export const getGameFromSocket = (
   socket: SocketIO.Socket,
