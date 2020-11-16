@@ -1,0 +1,47 @@
+.HomeActions {
+  display: flex;
+  justify-content: center;
+}
+
+.HomeActions button {
+  max-width: 200px;
+  padding: 1rem;
+
+  font-size: 1rem;
+  font-family: 'Retro Gaming';
+  color: #000;
+  background-color: orange;
+  border: 2px solid #000;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.HomeActions button:not(:first-of-type) {
+  margin-left: 16px;
+}
+
+.Waiting {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.Loader {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background-color: darkorange;
+  animation: loading 1.5s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
+}
+
+@keyframes loading {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(70px, 0) rotate(360deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}

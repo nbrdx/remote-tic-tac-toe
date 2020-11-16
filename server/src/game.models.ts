@@ -15,6 +15,7 @@ export type Player = 0 | 1 | null;
 export enum OnEvent {
   CreatePrivateGame = 'createPrivateGame',
   FindOpponent = 'findOpponent',
+  CancelFindOpponent = 'cancelFindOpponent',
   JoinGame = 'joinGame',
   PlayCell = 'playCell',
   ReplayGame = 'replayGame',

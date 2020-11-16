@@ -12,6 +12,7 @@ export const initGame = (sio: SocketIO.Server, socket: SocketIO.Socket) => {
 
   socket.on(OnEvent.CreatePrivateGame, () => createPrivateGame(socket));
   socket.on(OnEvent.FindOpponent, () => findOpponent(socket));
+  socket.on(OnEvent.CancelFindOpponent, () => cancelFindOpponent(socket));
   socket.on(OnEvent.JoinGame, (gameId: string) => joinGame(gameId, socket));
   socket.on(OnEvent.PlayCell, (cellIndex: number) =>
     playCell(cellIndex, socket)
@@ -37,6 +38,16 @@ const findOpponent = (socket: SocketIO.Socket) => {
     });
     matchmakingSockets.splice(0, 2);
   }
+};
+
+const cancelFindOpponent = (socket: SocketIO.Socket) => {
+  const socketIndex = matchmakingSockets.findIndex(socketId => socketId === socket.id);
+
+  if (socketIndex < 0) {
+    return;
+  }
+
+  matchmakingSockets.splice(socketIndex, 1);
 };
 
 const joinGame = (gameId: string, socket: SocketIO.Socket) => {
