@@ -1,0 +1,12 @@
+.Button {
+  max-width: 200px;
+  padding: 1rem;
+
+  font-size: 1rem;
+  font-family: 'Retro Gaming';
+  color: #000;
+  background-color: orange;
+  border: 2px solid #000;
+  border-radius: 10px;
+  cursor: pointer;
+}
