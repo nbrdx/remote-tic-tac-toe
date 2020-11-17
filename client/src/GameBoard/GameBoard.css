@@ -1,7 +1,42 @@
-.game-board {
-  width: 306px;
+.GameBoard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.GameBoard > p {
+  margin: 1rem 0 0;
+}
+
+.Main {
+  display: flex;
+  align-items: center;
   margin: auto;
+}
+
+.Player {
+  width: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+.Player p {
+  margin: 0;
+}
+
+.Player p:not(:first-of-type) {
+  margin-top: 1rem;
+}
+
+.Board {
+  width: 300px;
+  margin: 0 2rem;
 
   display: grid;
   grid-template-columns: repeat(3, auto);
+
+  background-color: #fff;
 }

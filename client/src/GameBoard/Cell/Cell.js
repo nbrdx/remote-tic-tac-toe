@@ -2,8 +2,8 @@ import React from 'react';
 
 import './Cell.css';
 
-const Cell = ({ index, value, clicked }) => {
-  return <div className='cell' onClick={clicked}>{value}</div>;
+const Cell = ({ value, clicked }) => {
+  return <div className='Cell' onClick={clicked}>{value}</div>;
 };
 
 export default Cell;
