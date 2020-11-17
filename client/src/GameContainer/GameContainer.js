@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { useLastMessage, useSocket } from 'use-socketio';
 
+import './GameContainer.css';
+import Button from '../Button/Button';
 import GameBoard from '../GameBoard/GameBoard';
 
 const GameContainer = () => {
@@ -25,31 +27,53 @@ const GameContainer = () => {
     socket.emit('replayGame');
   };
 
-  const playingTurn = gameUpdate ? (
-    gameUpdate.sockets[gameUpdate.currentPlayer] === socket.id ? (
-      <p>Your turn to play !</p>
-    ) : (
-      <p>Waiting for your opponent...</p>
-    )
-  ) : null;
+  if (!gameUpdate) {
+    return (
+      <div className='Waiting'>
+        <p>Share the URL with a friend !</p>
+        <div className='LoaderContainer'>
+          <div className='Loader'></div>
+        </div>
+      </div>
+    );
+  }
 
-  const gameInfo = gameUpdate ? (
-    <div className='game-info'>
-      <h2>Game Info</h2>
-      <p>gameId: {gameUpdate?.id}</p>
-      <p>socket: {socket.id}</p>
-      <p>players sockets:[{gameUpdate?.sockets.join(', ')}]</p>
-    </div>
-  ) : null;
+  const playerSocketIndex = gameUpdate.sockets.findIndex(
+    (s) => s === socket.id
+  );
+  const playerIcon = gameUpdate.icons[playerSocketIndex];
+
+  const isPlayerTurn =
+    gameUpdate.sockets[gameUpdate.currentPlayer] === socket.id;
 
   return (
     <React.Fragment>
-      <GameBoard {...gameUpdate} cellPlayed={playCellHandler} />
-      {playingTurn}
-      {gameInfo}
-      <div className='actions'>
-        <button onClick={() => history.push('/')}>Home</button>
-        <button onClick={replayHandler}>Replay</button>
+      <GameBoard
+        gameState={gameUpdate.gameState}
+        isGameActive={gameUpdate.isGameActive}
+        currentPlayer={gameUpdate.icons[gameUpdate.currentPlayer]}
+        isPlayerTurn={isPlayerTurn}
+        playerName={'You'}
+        playerIcon={playerIcon}
+        opponentName={'Opponent'}
+        opponentIcon={playerIcon === 'X' ? 'O' : 'X'}
+        cellPlayed={playCellHandler}
+      />
+
+      {!gameUpdate.isGameActive && (
+        <div className='Actions'>
+          <Button onClick={replayHandler}>
+            Replay {gameUpdate.playAgain.length > 0 && `(${gameUpdate.playAgain.length}/2)`}
+          </Button>
+          <Button onClick={() => history.push('/')}>Back to Home</Button>
+        </div>
+      )}
+
+      <div className='game-info'>
+        <h2>Debug Game Info TO REMOVE</h2>
+        <p>gameId: {gameUpdate?.id}</p>
+        <p>socket: {socket.id}</p>
+        <p>players sockets:[{gameUpdate?.sockets.join(', ')}]</p>
       </div>
     </React.Fragment>
   );
