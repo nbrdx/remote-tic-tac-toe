@@ -3,35 +3,37 @@
   justify-content: center;
 }
 
-.HomeActions button {
-  max-width: 200px;
-  padding: 1rem;
-
-  font-size: 1rem;
-  font-family: 'Retro Gaming';
-  color: #000;
-  background-color: orange;
-  border: 2px solid #000;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.HomeActions button:not(:first-of-type) {
+.HomeActions Button:not(:first-of-type) {
   margin-left: 16px;
 }
 
 .Waiting {
+  margin: auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
 }
 
-.Loader {
+.Waiting p {
+  margin: 0;
+}
+
+.LoaderContainer {
+  width: calc(12px + 70px);
+  margin-top: 1rem;
+}
+
+.LoaderContainer .Loader {
   width: 12px;
   height: 12px;
+  
   border-radius: 4px;
   background-color: darkorange;
   animation: loading 1.5s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
+}
+
+.Waiting Button {
+  margin-top: 1rem;
 }
 
 @keyframes loading {

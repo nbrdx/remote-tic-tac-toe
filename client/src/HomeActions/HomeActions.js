@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useSocket } from 'use-socketio';
 
 import './HomeActions.css';
-import { useSocket } from 'use-socketio';
+import Button from '../Button/Button';
 
 const HomeActions = () => {
   const [selectedAction, setSelectedAction] = useState('');
@@ -30,15 +31,17 @@ const HomeActions = () => {
     selectedAction === 'public' ? (
       <div className='Waiting'>
         <p>Waiting for an opponent</p>
-        <div className='Loader'></div>
-        <button onClick={cancelFindOpponentHandler}>Cancel</button>
+        <div className='LoaderContainer'>
+          <div className='Loader'></div>
+        </div>
+        <Button onClick={cancelFindOpponentHandler}>Cancel</Button>
       </div>
     ) : (
       <React.Fragment>
-        <button onClick={createPrivateGameHandler}>
+        <Button onClick={createPrivateGameHandler}>
           Create a private game
-        </button>
-        <button onClick={findOpponentHandler}>Find an opponent</button>
+        </Button>
+        <Button onClick={findOpponentHandler}>Find an opponent</Button>
       </React.Fragment>
     );
 
