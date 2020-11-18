@@ -10,7 +10,10 @@ import './App.css';
 import HomeActions from './HomeActions/HomeActions';
 import GameContainer from './GameContainer/GameContainer';
 
-const ENDPOINT = 'http://localhost:4001';
+const ENDPOINT =
+  process.env.NODE_ENV === 'production'
+    ? 'https://afternoon-hamlet-61914.herokuapp.com/'
+    : 'http://localhost:4001';
 
 function App() {
   return (
