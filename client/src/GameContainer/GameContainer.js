@@ -20,14 +20,6 @@ const GameContainer = () => {
     return () => socket.emit('leaveGame', gameId);
   }, [socket, gameId]);
 
-  const playCellHandler = (cellIndex) => {
-    socket.emit('playCell', cellIndex);
-  };
-
-  const replayHandler = () => {
-    socket.emit('replayGame');
-  };
-
   if (!gameUpdate) {
     return (
       <div className='Waiting'>
@@ -36,6 +28,14 @@ const GameContainer = () => {
       </div>
     );
   }
+
+  const playCellHandler = (cellIndex) => {
+    socket.emit('playCell', cellIndex);
+  };
+
+  const replayHandler = () => {
+    socket.emit('replayGame');
+  };
 
   const playerSocketIndex = gameUpdate.sockets.findIndex(
     (s) => s === socket.id
