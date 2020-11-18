@@ -1,3 +1,7 @@
+.Waiting .Loader {
+  margin-top: 1rem;
+}
+
 .Actions {
   display: flex;
   margin: 4rem auto 0;

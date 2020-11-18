@@ -4,6 +4,7 @@ import { useSocket } from 'use-socketio';
 
 import './HomeActions.css';
 import Button from '../Button/Button';
+import Loader from '../Loader/Loader';
 
 const HomeActions = () => {
   const [selectedAction, setSelectedAction] = useState('');
@@ -31,9 +32,7 @@ const HomeActions = () => {
     selectedAction === 'public' ? (
       <div className='Waiting'>
         <p>Waiting for an opponent</p>
-        <div className='LoaderContainer'>
-          <div className='Loader'></div>
-        </div>
+        <Loader />
         <Button onClick={cancelFindOpponentHandler}>Cancel</Button>
       </div>
     ) : (

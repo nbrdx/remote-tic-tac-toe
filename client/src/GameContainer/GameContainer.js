@@ -3,8 +3,9 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useLastMessage, useSocket } from 'use-socketio';
 
 import './GameContainer.css';
+import Game from '../Game/Game';
 import Button from '../Button/Button';
-import GameBoard from '../GameBoard/GameBoard';
+import Loader from '../Loader/Loader';
 
 const GameContainer = () => {
   const { socket } = useSocket('gameNotJoinable', () => history.push('/'));
@@ -31,9 +32,7 @@ const GameContainer = () => {
     return (
       <div className='Waiting'>
         <p>Share the URL with a friend !</p>
-        <div className='LoaderContainer'>
-          <div className='Loader'></div>
-        </div>
+        <Loader />
       </div>
     );
   }
@@ -48,7 +47,7 @@ const GameContainer = () => {
 
   return (
     <React.Fragment>
-      <GameBoard
+      <Game
         gameState={gameUpdate.gameState}
         isGameActive={gameUpdate.isGameActive}
         currentPlayer={gameUpdate.icons[gameUpdate.currentPlayer]}

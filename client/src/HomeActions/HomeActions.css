@@ -18,20 +18,7 @@
   margin: 0;
 }
 
-.LoaderContainer {
-  width: calc(12px + 70px);
-  margin-top: 1rem;
-}
-
-.LoaderContainer .Loader {
-  width: 12px;
-  height: 12px;
-  
-  border-radius: 4px;
-  background-color: darkorange;
-  animation: loading 1.5s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
-}
-
+.Waiting Loader,
 .Waiting Button {
   margin-top: 1rem;
 }
