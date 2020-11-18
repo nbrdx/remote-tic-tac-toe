@@ -1,9 +1,9 @@
 import React from 'react';
 
-import './GameBoard.css';
+import './Game.css';
 import Cell from './Cell/Cell';
 
-const GameBoard = ({
+const Game = ({
   gameState,
   isGameActive,
   currentPlayer,
@@ -21,27 +21,19 @@ const GameBoard = ({
     cellPlayed(cellIndex);
   };
 
-  const cells = gameState ? (
-    gameState.map((value, index) => (
-      <Cell
-        key={index}
-        value={value}
-        clicked={() => cellClickedHandler(index)}
-      />
-    ))
-  ) : (
-    <div>Invalid GameBoard props</div>
-  );
+  const cells = gameState.map((value, index) => (
+    <Cell key={index} value={value} clicked={() => cellClickedHandler(index)} />
+  ));
 
   return (
-    <div className='GameBoard'>
+    <div className='Game'>
       <div className='Main'>
         <div className='Player'>
           <p>{playerName}</p>
           <p>{playerIcon}</p>
           <p>Wins: 0</p>
         </div>
-        <div className='Board'>{cells}</div>
+        <div className='GameBoard'>{cells}</div>
         <div className='Player'>
           <p>{opponentName}</p>
           <p>{opponentIcon}</p>
@@ -55,4 +47,4 @@ const GameBoard = ({
   );
 };
 
-export default GameBoard;
+export default Game;
