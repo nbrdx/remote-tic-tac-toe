@@ -21,6 +21,6 @@
     "dev": "run-p watch-*",
     "watch-node": "nodemon dist/server.js",
     "watch-ts": "tsc --watch",
-    "build": "./node_modules/typescript/bin/tsc"
+    "build": "tsc"
   }
 }
