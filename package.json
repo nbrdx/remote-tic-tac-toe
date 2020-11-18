@@ -4,16 +4,20 @@
   "author": "Nicolas BARDOUX <nicolas.bardoux@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nbrdx/tic-tac-toe.git"
+    "url": "git+https://github.com/nbrdx/remote-tic-tac-toe.git"
   },
   "license": "MIT",
+  "engines": {
+    "node": "15.2.0"
+  },
   "scripts": {
-    "start": "run-p start:*",
+    "start": "run-p start:server start:client",
     "start:server": "cd server && npm start",
     "start:client": "cd client && npm start",
-    "postinstall": "run-p install:*",
+    "install:children ": "run-p install:*",
     "install:server": "cd server && npm install",
-    "install:client": "cd client && npm install"
+    "install:client": "cd client && npm install",
+    "start:heroku": "npm-run-all install:server start:server"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"
