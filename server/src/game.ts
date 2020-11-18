@@ -1,13 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
+import { Server, Socket } from 'socket.io';
 
 import { getGameFromSocket, isGameOver } from './game.utils';
 import { EmitEvent, Game, OnEvent, Player } from './game.models';
 
-let io: SocketIO.Server;
+let io: Server;
 const games: Game[] = [];
 const matchmakingSockets: string[] = [];
 
-export const initGame = (sio: SocketIO.Server, socket: SocketIO.Socket) => {
+export const initGame = (sio: Server, socket: Socket) => {
   io = sio; // store the socket.io server for events
 
   socket.on(OnEvent.CreatePrivateGame, () => createPrivateGame(socket));
@@ -22,12 +23,12 @@ export const initGame = (sio: SocketIO.Server, socket: SocketIO.Socket) => {
 };
 
 // Event handlers
-const createPrivateGame = (socket: SocketIO.Socket) => {
+const createPrivateGame = (socket: Socket) => {
   const gameId = createGame();
   socket.emit(EmitEvent.GameCreated, gameId);
 };
 
-const findOpponent = (socket: SocketIO.Socket) => {
+const findOpponent = (socket: Socket) => {
   matchmakingSockets.push(socket.id);
 
   if (matchmakingSockets.length === 2) {
@@ -40,8 +41,10 @@ const findOpponent = (socket: SocketIO.Socket) => {
   }
 };
 
-const cancelFindOpponent = (socket: SocketIO.Socket) => {
-  const socketIndex = matchmakingSockets.findIndex(socketId => socketId === socket.id);
+const cancelFindOpponent = (socket: Socket) => {
+  const socketIndex = matchmakingSockets.findIndex(
+    (socketId) => socketId === socket.id
+  );
 
   if (socketIndex < 0) {
     return;
@@ -50,7 +53,7 @@ const cancelFindOpponent = (socket: SocketIO.Socket) => {
   matchmakingSockets.splice(socketIndex, 1);
 };
 
-const joinGame = (gameId: string, socket: SocketIO.Socket) => {
+const joinGame = (gameId: string, socket: Socket) => {
   const gameIndex = games.findIndex((game) => game.id === gameId);
 
   if (gameIndex < 0) {
@@ -75,7 +78,7 @@ const joinGame = (gameId: string, socket: SocketIO.Socket) => {
   });
 };
 
-const playCell = (cellIndex: number, socket: SocketIO.Socket) => {
+const playCell = (cellIndex: number, socket: Socket) => {
   const game = getGameFromSocket(socket, games);
 
   if (!game || game.sockets[game.currentPlayer] !== socket.id) {
@@ -97,7 +100,7 @@ const playCell = (cellIndex: number, socket: SocketIO.Socket) => {
   io.to(game.id).emit(EmitEvent.GameUpdated, game);
 };
 
-const replayGame = (socket: SocketIO.Socket) => {
+const replayGame = (socket: Socket) => {
   const game = getGameFromSocket(socket, games);
 
   if (game.playAgain.includes(socket.id)) {
@@ -109,12 +112,12 @@ const replayGame = (socket: SocketIO.Socket) => {
   if (game.playAgain.length === 2) {
     resetGame(game);
     return;
-  }-
+  }
 
   io.to(game.id).emit(EmitEvent.GameUpdated, game);
 };
 
-const leaveGame = (gameId: string, socket: SocketIO.Socket) => {
+const leaveGame = (gameId: string, socket: Socket) => {
   const gameIndex = games.findIndex((game) => game.id === gameId);
 
   if (gameIndex < 0) {
@@ -124,6 +127,11 @@ const leaveGame = (gameId: string, socket: SocketIO.Socket) => {
 
   socket.leave(gameId, () => {
     console.log(`${socket.id} left room ${gameId}.`);
+
+    // Remove socket from the game sockets
+    games[gameIndex].sockets = games[gameIndex].sockets.filter(
+      (s) => s === socket.id
+    );
   });
 };
 

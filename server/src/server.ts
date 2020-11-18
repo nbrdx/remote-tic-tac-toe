@@ -1,5 +1,5 @@
 import http from 'http';
-import SocketIO from 'socket.io';
+import SocketIO, { Socket } from 'socket.io';
 
 import { initGame } from './game';
 
@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 4001;
 const server = http.createServer();
 const io = SocketIO(server);
 
-io.on('connection', (socket) => {
+io.on('connection', (socket: Socket) => {
   console.log(`New client connected: ${socket.id}`);
 
   initGame(io, socket);
@@ -19,5 +19,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Listening on PORT ${PORT}`);
+  console.log(`Listening on port: ${PORT}`);
 });
