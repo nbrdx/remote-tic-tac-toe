@@ -17,7 +17,7 @@
     "install:children ": "run-p install:*",
     "install:server": "cd server && npm install",
     "install:client": "cd client && npm install",
-    "start:heroku": "npm install && npm-run-all install:server start:server"
+    "start:heroku": "npm run install:server && npm run start:server"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"
