@@ -27,8 +27,8 @@
   margin: 0;
 }
 
-.Player p:not(:first-of-type) {
-  margin-top: 1rem;
+.Icon {
+  font-size: 3rem;
 }
 
 .GameBoard {

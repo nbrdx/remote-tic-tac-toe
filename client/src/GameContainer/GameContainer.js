@@ -40,40 +40,40 @@ const GameContainer = () => {
   const playerSocketIndex = gameUpdate.sockets.findIndex(
     (s) => s === socket.id
   );
-  const playerIcon = gameUpdate.icons[playerSocketIndex];
 
-  const isPlayerTurn =
-    gameUpdate.sockets[gameUpdate.currentPlayer] === socket.id;
+  const player = {
+    name: 'You',
+    icon: gameUpdate.icons[playerSocketIndex],
+    score: gameUpdate.scores[playerSocketIndex],
+  };
+
+  const opponent = {
+    name: 'Opponent',
+    icon: gameUpdate.icons[playerSocketIndex === 1 ? 0 : 1],
+    score: gameUpdate.scores[playerSocketIndex === 1 ? 0 : 1],
+  };
 
   return (
     <React.Fragment>
       <Game
         gameState={gameUpdate.gameState}
-        isGameActive={gameUpdate.isGameActive}
+        status={gameUpdate.status}
         currentPlayer={gameUpdate.icons[gameUpdate.currentPlayer]}
-        isPlayerTurn={isPlayerTurn}
-        playerName={'You'}
-        playerIcon={playerIcon}
-        opponentName={'Opponent'}
-        opponentIcon={playerIcon === 'X' ? 'O' : 'X'}
+        player={player}
+        opponent={opponent}
+        drawScore={gameUpdate.scores[2]}
         cellPlayed={playCellHandler}
       />
 
-      {!gameUpdate.isGameActive && (
+      {gameUpdate.status !== 'play' && (
         <div className='Actions'>
           <Button onClick={replayHandler}>
-            Replay {gameUpdate.playAgain.length > 0 && `(${gameUpdate.playAgain.length}/2)`}
+            Replay {gameUpdate.playAgain.length > 0 &&
+              `(${gameUpdate.playAgain.length}/2)`}
           </Button>
           <Button onClick={() => history.push('/')}>Back to Home</Button>
         </div>
       )}
-
-      <div className='game-info'>
-        <h2>Debug Game Info TO REMOVE</h2>
-        <p>gameId: {gameUpdate?.id}</p>
-        <p>socket: {socket.id}</p>
-        <p>players sockets:[{gameUpdate?.sockets.join(', ')}]</p>
-      </div>
     </React.Fragment>
   );
 };

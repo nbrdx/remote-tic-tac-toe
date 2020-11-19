@@ -5,16 +5,15 @@ import Cell from './Cell/Cell';
 
 const Game = ({
   gameState,
-  isGameActive,
+  status,
   currentPlayer,
-  playerName,
-  playerIcon,
-  opponentName,
-  opponentIcon,
+  player,
+  opponent,
+  drawScore,
   cellPlayed,
 }) => {
   const cellClickedHandler = (cellIndex) => {
-    if (!isGameActive || gameState[cellIndex] !== '') {
+    if (status !== 'play' || gameState[cellIndex] !== '') {
       return;
     }
 
@@ -25,24 +24,38 @@ const Game = ({
     <Cell key={index} value={value} clicked={() => cellClickedHandler(index)} />
   ));
 
+  const isPlayerTurn = player.icon === currentPlayer;
+
+  let statusText = `It's a draw !`;
+
+  if (status === 'play') {
+    statusText = isPlayerTurn
+      ? 'Your turn to play'
+      : 'Your opponent is playing';
+  }
+
+  if (status === 'win') {
+    statusText = isPlayerTurn ? 'You won !' : 'You lost !';
+  }
+
   return (
     <div className='Game'>
       <div className='Main'>
         <div className='Player'>
-          <p>{playerName}</p>
-          <p>{playerIcon}</p>
-          <p>Wins: 0</p>
+          <p>{player.name}</p>
+          <p className='Icon'>{player.icon}</p>
+          <p>Wins: {player.score}</p>
         </div>
         <div className='GameBoard'>{cells}</div>
         <div className='Player'>
-          <p>{opponentName}</p>
-          <p>{opponentIcon}</p>
-          <p>Wins: 0</p>
+          <p>{opponent.name}</p>
+          <p className='Icon'>{opponent.icon}</p>
+          <p>Wins: {opponent.score}</p>
         </div>
       </div>
 
-      <p>{`${currentPlayer} to play`}</p>
-      <p>{`Draws: 3`}</p>
+      <p>{statusText}</p>
+      <p>{`Draws: ${drawScore}`}</p>
     </div>
   );
 };
