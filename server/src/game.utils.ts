@@ -10,7 +10,9 @@ export const getGameFromSocket = (
   return games.find((game) => game.id === gameId);
 };
 
-export const isGameOver = (gameState: GameIcon[]): boolean => {
+export const getGameStatus = (
+  gameState: GameIcon[]
+): 'play' | 'win' | 'draw' => {
   const isWinningState = WINNING_STATES.some((winningState) => {
     const a = gameState[winningState[0]];
     const b = gameState[winningState[1]];
@@ -19,10 +21,14 @@ export const isGameOver = (gameState: GameIcon[]): boolean => {
     return a !== '' && b !== '' && c !== '' && a === b && b === c;
   });
 
+  if (isWinningState) {
+    return 'win';
+  }
+
   const isDraw = !gameState.includes('');
+  if (isDraw) {
+    return 'draw';
+  }
 
-  return isWinningState || isDraw;
+  return 'play';
 };
-
-
-

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Server, Socket } from 'socket.io';
 
-import { getGameFromSocket, isGameOver } from './game.utils';
+import { getGameFromSocket, getGameStatus } from './game.utils';
 import { EmitEvent, Game, OnEvent, Player } from './game.models';
 
 let io: Server;
@@ -90,12 +90,21 @@ const playCell = (cellIndex: number, socket: Socket) => {
   updatedGameState[cellIndex] = game.icons[game.currentPlayer];
   game.gameState = updatedGameState;
 
-  // End the game or change current player
-  if (isGameOver(updatedGameState)) {
-    game.isGameActive = false;
-  } else {
+  const gameStatus = getGameStatus(updatedGameState);
+
+  if (gameStatus === 'play') {
     game.currentPlayer = game.currentPlayer === 0 ? 1 : 0;
   }
+
+  if (gameStatus === 'win') {
+    game.scores[game.currentPlayer] += 1;
+  }
+
+  if (gameStatus === 'draw') {
+    game.scores[2] += 1;
+  }
+
+  game.status = gameStatus;
 
   io.to(game.id).emit(EmitEvent.GameUpdated, game);
 };
@@ -140,10 +149,11 @@ const createGame = (): string => {
   const game: Game = {
     id: uuidv4(),
     sockets: [],
+    status: 'play',
     gameState: new Array(9).fill(''),
-    isGameActive: false,
     initialPlayer: null,
     currentPlayer: null,
+    scores: [0, 0, 0],
     icons: ['X', 'O'],
     playAgain: [],
   };
@@ -161,7 +171,6 @@ const startGame = (game: Game) => {
   const updatedGame: Game = {
     ...game,
     initialPlayer,
-    isGameActive: true,
     currentPlayer: initialPlayer,
   };
 
@@ -181,7 +190,7 @@ const resetGame = (game: Game) => {
   const updatedGame: Game = {
     ...game,
     gameState: new Array(9).fill(''),
-    isGameActive: true,
+    status: 'play',
     initialPlayer: newPlayer,
     currentPlayer: newPlayer,
     playAgain: [],

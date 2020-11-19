@@ -1,14 +1,16 @@
 export interface Game {
   id: string;
   sockets: string[];
+  status: GameStatus;
   gameState: GameIcon[];
-  isGameActive: boolean;
   initialPlayer: Player;
   currentPlayer: Player;
+  scores: number[];
   icons: GameIcon[];
   playAgain: string[];
 }
 
+export type GameStatus = 'play' | 'draw' | 'win';
 export type GameIcon = '' | 'X' | 'O';
 export type Player = 0 | 1 | null;
 
